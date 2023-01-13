@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+ # Ne pas utiliser d'underscore dans le nom du service, cela génère des erreurs lors de l'utilisation du nom en tant qu'hôte
+  mariadb:
+    build: ./db_dockerfile
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: root_password
+      MARIADB_USER: myuser
+      MARIADB_PASSWORD: mypassword
+      MARIADB_DATABASE: parc_informatique
+    networks:
+      - my_network
+  
+  python-app:
+    build: .
+    environment:
+      APP_DB_HOST: mariadb
+      APP_DB_USER: myuser
+      APP_DB_PASSWORD: mypassword
+      APP_DB_NAME: parc_informatique
+      APP_DB_PORT: "3306"
+    networks:
+      - my_network
+    volumes:
+      - db:/var/lib/mysql
+    stdin_open: true
+    tty: true
+
+networks:
+  my_network: 
+
+volumes:
+  db: 
+
